@@ -1,15 +1,22 @@
-function notificationSender(){
-    this.http = new XMLHttpRequest();
-}
-
-notificationSender.prototype.post= function(url, data, callback){
-    this.http.open('POST', url, true);
-    this.http.setRequestHeader('Content-Type', 'application/json');
-    this.http.setRequestHeader('Authorization', 'key=AAAARdR9Avs:APA91bHJPAkbsTVnULi3VlSmz7rQ3n2vdgZSpbpeVEeDQT5b--CD6yAbqt4bZlsuRPwkDkV5J6Vm35s8x-95eGW69MUA0RbCj__YfCtCq0aULuBrItKrpBAvaYYgIa-kYPRgWmbPH1qV');
-    let self = this;
-    this.http.onload = function(){
-        callback(self.http.responseText);
+function send(url, data, key, callBack){
+    console.log('send');
+    const options = {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'key=' + key
+        }
     }
 
-    this.http.send(JSON.stringify(data));
+    fetch(url,options)
+        .then(res => {
+            if(!res.ok && res.status !== 200){
+                console.log('here');
+                 throw Error(res.status + ' request unsuccessful');
+            }
+            return res.text();
+        })
+        .then(res => callBack('message sent succesfully <br>' + res))
+        .catch(err => callBack(err));
 }
